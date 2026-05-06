@@ -40,3 +40,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python contamination — talinhaga is Node-only; main.py / .venv confused
+# Railway's auto-detector into provisioning a Python container instead of Next.js
+.venv/
+main.py
+__pycache__/
+*.py[cod]
+
+# local screenshots / logs (don't commit)
+*.png
+*.jpg
+*.jpeg
+
