@@ -101,18 +101,17 @@ export default function Home() {
 
       <OutputCard output={output} mode={mode} />
 
-      <footer className="mt-24 text-center text-sm text-neutral-500 md:mt-32">
-        Built by{' '}
-        {/* TODO: confirm @justineph is the right handle before deploy */}
+      <footer className="mt-24 text-center font-serif text-sm tracking-wide text-[#7A6A5A] md:mt-32">
+        built by{' '}
         <a
-          href="https://x.com/justineph"
+          href="https://www.instagram.com/jst_1010/"
           target="_blank"
           rel="noopener noreferrer"
-          className="underline-offset-4 hover:underline"
+          className="underline-offset-4 transition-colors hover:text-[#6B1F2E] hover:underline"
         >
-          @justineph
+          Jst.1010
         </a>{' '}
-        in Batangas
+        in PH
       </footer>
     </main>
   );
