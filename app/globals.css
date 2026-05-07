@@ -4,27 +4,49 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Talinhaga design tokens.
-   Colors: cream page → cream-soft card → ink text → maroon accent.
+/* Talinhaga design tokens — parchment / vintage-manuscript palette.
+   Cream + ink + maroon are kept as pre-redesign fallbacks; new parchment
+   tokens are the primary surface colors now.
    Fonts: --font-fraunces / --font-inter come from next/font in app/layout.tsx
    and are exposed as CSS custom properties on <html>; we wire them into
    Tailwind's font-serif / font-sans utilities here. */
 @theme {
+  /* Original palette — preserved for fallback / revert ease */
   --color-cream: #FAF7F2;
   --color-cream-soft: #F2EDE5;
   --color-ink: #1A1A1A;
   --color-maroon: #6B1F2E;
   --color-maroon-soft: #8A2D3F;
 
+  /* Parchment palette — manuscript redesign.
+     parchment        → page base / inactive tab fill
+     parchment-deep   → cards, input, output, active tab (the framed surfaces)
+     parchment-stain  → mottling pigment for body radial gradients
+     sepia-ink        → primary text (warmer than #1A1A1A; AAA on parchment-deep)
+     aged-rule        → hairlines, dividers, low-emphasis labels */
+  --color-parchment: #EDE2C8;
+  --color-parchment-deep: #DCC9A3;
+  --color-parchment-stain: #C9B48A;
+  --color-sepia-ink: #3E2E1F;
+  --color-aged-rule: #8B7355;
+
   --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 /* Unlayered body rule overrides shadcn's @layer base { body { @apply bg-background ... } }
-   because unlayered styles take precedence over layered ones in Tailwind v4. */
+   because unlayered styles take precedence over layered ones in Tailwind v4.
+   Three soft radial gradients build a CSS-only "stained vellum" effect — no asset.
+   background-attachment: fixed gives a subtle parallax so the texture feels stable
+   while content scrolls. Alpha is tuned to ≤0.28 so body text stays at AAA contrast. */
 body {
-  background-color: var(--color-cream);
-  color: var(--color-ink);
+  background-color: var(--color-parchment);
+  background-image:
+    radial-gradient(ellipse at 20% 30%, color-mix(in srgb, var(--color-parchment-stain) 28%, transparent) 0%, transparent 45%),
+    radial-gradient(ellipse at 80% 70%, color-mix(in srgb, var(--color-parchment-stain) 22%, transparent) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 20%, color-mix(in srgb, var(--color-parchment-stain) 18%, transparent) 0%, transparent 40%);
+  background-attachment: fixed;
+  color: var(--color-sepia-ink);
   font-family: var(--font-sans);
 }
 

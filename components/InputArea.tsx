@@ -51,12 +51,15 @@ export function InputArea({ value, onChange, onSubmit, isLoading, placeholder }:
           maxLength={MAX_LENGTH}
           disabled={isLoading}
           rows={4}
-          className="min-h-28 resize-none bg-white pr-4 pb-7 focus-visible:border-maroon focus-visible:ring-maroon/30"
+          // Parchment-deep fill with a soft sepia frame — feels like writing on aged paper.
+          // Placeholder gets serif italic + aged-rule color for the manuscript-prompt feel.
+          // Typed text falls back to body sepia-ink for max contrast.
+          className="min-h-28 resize-none border-aged-rule/30 bg-parchment-deep pr-4 pb-7 text-sepia-ink placeholder:font-serif placeholder:italic placeholder:text-aged-rule focus-visible:border-maroon focus-visible:ring-maroon/30"
         />
         <span
           aria-live="polite"
           className={`pointer-events-none absolute right-3 bottom-2 text-xs tabular-nums ${
-            nearLimit ? 'text-maroon' : 'text-neutral-500'
+            nearLimit ? 'text-maroon' : 'text-aged-rule'
           }`}
         >
           {value.length}/{MAX_LENGTH}
@@ -64,13 +67,14 @@ export function InputArea({ value, onChange, onSubmit, isLoading, placeholder }:
       </div>
 
       {/* animate-pulse on the loading button reads as "thinking" without adding spinner
-          visual noise — the button is text-only and the rest of the UI is calm. */}
+          visual noise — the button is text-only and the rest of the UI is calm.
+          font-serif on the label nods to the manuscript aesthetic without changing color. */}
       <Button
         type="button"
         onClick={onSubmit}
         disabled={submitDisabled}
         size="lg"
-        className={`h-11 self-start bg-maroon px-6 text-base text-white hover:bg-maroon/90 focus-visible:ring-maroon/40 ${
+        className={`h-11 self-start bg-maroon px-6 font-serif text-base text-white hover:bg-maroon/90 focus-visible:ring-maroon/40 ${
           isLoading ? 'animate-pulse' : ''
         }`}
       >

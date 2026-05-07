@@ -77,10 +77,17 @@ export default function Home() {
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-12 md:py-16">
       <header className="mb-12 text-center md:mb-16">
-        <h1 className="font-serif text-3xl font-medium tracking-tight md:text-4xl">
+        <h1 className="font-serif text-3xl font-medium tracking-normal text-sepia-ink md:text-4xl">
           Talinhaga
         </h1>
-        <p className="mt-2 text-base text-neutral-600">
+        {/* Ornamental rule — hairline + diamond + hairline — evokes a manuscript flourish.
+            aria-hidden because it carries no information beyond decoration. */}
+        <div aria-hidden="true" className="mx-auto mt-4 flex w-32 items-center gap-2 text-aged-rule">
+          <span className="h-px flex-1 bg-current opacity-60" />
+          <span className="text-[10px] leading-none">◆</span>
+          <span className="h-px flex-1 bg-current opacity-60" />
+        </div>
+        <p className="mt-4 font-serif text-base italic text-aged-rule">
           Gawing malalim ang anumang sabihin mo.
         </p>
       </header>

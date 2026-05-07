@@ -44,26 +44,39 @@ export function OutputCard({ output, mode }: OutputCardProps) {
 
   return (
     <article
-      className="relative animate-in fade-in duration-500 rounded-2xl bg-cream-soft p-6 md:p-8"
+      // Framed manuscript page: parchment-deep fill, hairline sepia border, faintest shadow.
+      // rounded-md (smaller radius than before) reads as a paper card, not a chat bubble.
+      className="relative animate-in fade-in duration-500 rounded-md border border-aged-rule/40 bg-parchment-deep p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] md:p-8"
     >
+      {/* Decorative open-quote glyph straddling the top border — manuscript flourish.
+          Positioned in its own pill of bg-parchment-deep so the glyph sits ON the border
+          rather than inside or outside it. aria-hidden because it's pure decoration. */}
+      <div
+        aria-hidden="true"
+        className="absolute -top-3 left-6 bg-parchment-deep px-2 font-serif text-3xl leading-none text-aged-rule"
+      >
+        “
+      </div>
+
       <Button
         type="button"
         variant="ghost"
         size="icon"
         onClick={handleCopy}
         aria-label="Kopyahin ang talinhaga"
-        className="absolute top-3 right-3 text-neutral-600 hover:bg-black/5 focus-visible:ring-maroon/40"
+        className="absolute top-3 right-3 text-aged-rule hover:bg-black/5 focus-visible:ring-maroon/40"
       >
         {copied ? <Check /> : <Copy />}
       </Button>
 
       {/* role=status + aria-live so screen readers announce the new output when it appears.
-          The icon-flip handles sighted users; the toast + live region handle assistive tech. */}
-      <div role="status" aria-live="polite" className="pr-10">
-        <p className={`${modeClassName} text-ink`}>{output}</p>
+          The icon-flip handles sighted users; the toast + live region handle assistive tech.
+          pt-2 nudges the text down so the open-quote glyph and the first line don't collide. */}
+      <div role="status" aria-live="polite" className="pr-10 pt-2">
+        <p className={`${modeClassName} text-sepia-ink`}>{output}</p>
       </div>
 
-      <div className="mt-8 text-center text-[10px] uppercase tracking-[0.2em] text-neutral-500/70">
+      <div className="mt-8 text-center text-[10px] uppercase tracking-[0.2em] text-aged-rule">
         talinhaga.ph
       </div>
     </article>
