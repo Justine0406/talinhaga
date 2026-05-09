@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Square, Volume2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { useSpeech } from '@/hooks/useSpeech';
 import type { Mode } from '@/lib/prompts';
 
 interface OutputCardProps {
@@ -24,6 +25,16 @@ const MODE_STYLES: Record<Mode, string> = {
 
 export function OutputCard({ output, mode }: OutputCardProps) {
   const [copied, setCopied] = useState(false);
+  // One-time hint: if the device has no Filipino voice, the first play falls back
+  // to the browser default (English voice reading Tagalog phonemes — robotic).
+  // We tell the user once per session so they understand this is a device limit,
+  // not a product bug. Resets on page reload, which is fine for an MVP hint.
+  const [voiceHinted, setVoiceHinted] = useState(false);
+
+  // Web Speech is provider-agnostic at this seam: when we later swap to ElevenLabs
+  // / Google fil-PH WaveNet via /api/speak, the hook's surface stays identical and
+  // this component doesn't change. See plan: hooks/useSpeech.ts.
+  const { isPlaying, isSupported, hasFilipinoVoice, toggle } = useSpeech({ text: output, mode });
 
   // Returning null when there's nothing to show means the parent in Step 4 can render
   // <OutputCard ... /> unconditionally — no `{output && ...}` guard needed at the call site.
@@ -38,6 +49,14 @@ export function OutputCard({ output, mode }: OutputCardProps) {
     } catch {
       toast.error('Hindi nagawa ang pag-copy. Subukan mong i-select at i-copy nang manu-mano.');
     }
+  };
+
+  const handleSpeak = () => {
+    if (!voiceHinted && !hasFilipinoVoice) {
+      toast('Walang Filipino na boses sa device — narinig mo ang default.');
+      setVoiceHinted(true);
+    }
+    toggle();
   };
 
   const modeClassName = MODE_STYLES[mode];
@@ -58,21 +77,41 @@ export function OutputCard({ output, mode }: OutputCardProps) {
         “
       </div>
 
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={handleCopy}
-        aria-label="Kopyahin ang talinhaga"
-        className="absolute top-3 right-3 text-aged-rule hover:bg-black/5 focus-visible:ring-maroon/40"
-      >
-        {copied ? <Check /> : <Copy />}
-      </Button>
+      {/* Toolbar: speak (if supported) + copy. Stacked left-to-right so tab order
+          matches visual order. The speak button is conditionally rendered — on the
+          rare browser without speechSynthesis, only copy shows. aria-pressed on the
+          speak button gives screen readers a clean toggle-state announcement. */}
+      <div className="absolute top-3 right-3 flex items-center gap-1">
+        {isSupported && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleSpeak}
+            aria-label={isPlaying ? 'Itigil ang pagsasalita' : 'Pakinggan ang talinhaga'}
+            aria-pressed={isPlaying}
+            className="text-aged-rule hover:bg-black/5 focus-visible:ring-maroon/40"
+          >
+            {isPlaying ? <Square /> : <Volume2 />}
+          </Button>
+        )}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={handleCopy}
+          aria-label="Kopyahin ang talinhaga"
+          className="text-aged-rule hover:bg-black/5 focus-visible:ring-maroon/40"
+        >
+          {copied ? <Check /> : <Copy />}
+        </Button>
+      </div>
 
       {/* role=status + aria-live so screen readers announce the new output when it appears.
           The icon-flip handles sighted users; the toast + live region handle assistive tech.
-          pt-2 nudges the text down so the open-quote glyph and the first line don't collide. */}
-      <div role="status" aria-live="polite" className="pr-10 pt-2">
+          pt-2 nudges the text down so the open-quote glyph and the first line don't collide.
+          pr-20 (was pr-10) reserves room for the two-button toolbar above. */}
+      <div role="status" aria-live="polite" className="pr-20 pt-2">
         <p className={`${modeClassName} text-sepia-ink`}>{output}</p>
       </div>
 
